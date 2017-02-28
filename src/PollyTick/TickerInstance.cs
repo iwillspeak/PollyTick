@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Polly;
 
 namespace PollyTick
@@ -10,8 +11,22 @@ namespace PollyTick
             _policy = policy;
         }
 
-        public void Execute(Action a) {
-            _policy.Execute(a);
+        public Statistics Execute(Action a) {
+            var sw = Stopwatch.StartNew();
+            var exceptions = 0;
+
+            try
+            {
+                _policy.Execute(a);
+                sw.Stop();
+            }
+            catch
+            {
+                sw.Stop();
+                exceptions = 1;
+            }
+            
+            return new Statistics(1, exceptions, sw.ElapsedMilliseconds);
         }
 
         private Policy _policy;
