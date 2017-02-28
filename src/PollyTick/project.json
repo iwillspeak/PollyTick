@@ -4,7 +4,7 @@
     "debugType": "portable"
   },
   "dependencies": {
-	  "polly": "5.0.6"
+    "polly": "5.0.6"
   },
   "frameworks": {
     "netstandard1.6": {

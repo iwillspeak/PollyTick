@@ -5,12 +5,12 @@
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.3.0",
-      "polly": "5.0.6",
+    "polly": "5.0.6",
     "xunit": "2.1.0",
-      "dotnet-test-xunit": "1.0.0-rc2*",
-	  "PollyTick" : {
-		  "target": "project"
-	  }
+    "dotnet-test-xunit": "1.0.0-rc2*",
+    "PollyTick" : {
+      "target": "project"
+    }
   },
   "testRunner": "xunit",
   "frameworks": {

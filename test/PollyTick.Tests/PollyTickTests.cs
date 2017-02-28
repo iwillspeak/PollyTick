@@ -11,11 +11,11 @@ namespace Tests
         [Fact]
         public void CreateTicker_WithoutObserver_ExecutesDelegate()
         {
-			var foo = false;
-			Ticker
-				.WithPolicy(Policy.NoOp())
-				.Execute(() => foo = true);
-			Assert.True(foo);
+            var foo = false;
+            Ticker
+                .WithPolicy(Policy.NoOp())
+                .Execute(() => foo = true);
+            Assert.True(foo);
         }
     }
 }
