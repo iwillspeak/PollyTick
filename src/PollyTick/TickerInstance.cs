@@ -11,13 +11,32 @@ namespace PollyTick
             _policy = policy;
         }
 
-        public Statistics Execute(Action a) {
+        /// <summary>
+        ///   Execute the instrumented body, returning the execution
+        ///   statistics for this execution.
+        /// </summary>
+        public Statistics Execute(Action a)
+        {
+            return Execute(() =>
+                    {
+                        a();
+                        return 0;
+                    });
+        }
+
+        /// <summary>
+        ///  Execute the instrumented body, returning the execution
+        ///  statistics and execution result.
+        /// </summary>
+        public Statistics<T> Execute<T>(Func<T> action)
+        {
             var sw = Stopwatch.StartNew();
             var exceptions = 0;
+            var result = default(T);
 
             try
             {
-                _policy.Execute(a);
+                result = _policy.Execute(action);
                 sw.Stop();
             }
             catch
@@ -26,7 +45,7 @@ namespace PollyTick
                 exceptions = 1;
             }
             
-            return new Statistics(1, exceptions, sw.ElapsedMilliseconds);
+            return new Statistics<T>(1, exceptions, sw.ElapsedMilliseconds, result);
         }
 
         private Policy _policy;

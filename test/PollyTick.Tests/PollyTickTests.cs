@@ -55,5 +55,21 @@ namespace Tests
             Assert.Equal(0, stats.Exceptions);
             Assert.NotEqual(0, stats.TotalMilliseconds);
         }
+
+        [Fact]
+        public void Ticker_WhenBodyReturnsValue_ValueIsAvailable()
+        {
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOp());
+
+            var stats = ticker.Execute(() => 1337);
+            Assert.Equal(1337, stats.Result);
+
+            stats = ticker.Execute(() => -9000);
+            Assert.Equal(-9000, stats.Result);
+
+            var boolStats = ticker.Execute(() => false);
+            Assert.False(boolStats.Result);
+        }
     }
 }

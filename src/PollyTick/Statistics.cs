@@ -32,4 +32,22 @@ namespace PollyTick
         /// </summary>
         public long TotalMilliseconds { get; }
     }
+
+    /// <summary>
+    ///   Statistics about a policy execution with a return value.
+    /// </summary>
+    public class Statistics<T> : Statistics
+    {
+        public Statistics(int executions, int exceptions, long totalMillis, T result)
+            : base(executions, exceptions, totalMillis)
+        {
+            Result = result;
+        }
+
+        /// <summary>
+        ///   The result of the operation, if it completed
+        ///   successfully.
+        /// </summary>
+        public T Result { get; }
+    }
 }
