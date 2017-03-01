@@ -6,4 +6,4 @@ install:
 build_script:
   - ps: dotnet build src/*/project.json
 test_script:
-  - ps: dotnet test test/*/project.json
+  - ps: ForEach ($folder in (Get-ChildItem -Path test -Directory)) { dotnet test $folder.FullName }
