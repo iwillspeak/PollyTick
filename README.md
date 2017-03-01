@@ -7,7 +7,7 @@ This library is aims to provide a simple wrapper for the wonderful [Polly](http:
 ## Feature Status
 
  - [x] Keep track of Execution Time
- - [ ] Allow `async` policy execution.
+ - [x] Allow `async` policy execution.
  - [x] Policies with results.
  - [ ] Make capturing of Exceptions optional?
  - [ ] Allow observer registration.

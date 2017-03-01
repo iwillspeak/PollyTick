@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 using Polly;
@@ -70,6 +71,26 @@ namespace Tests
 
             var boolStats = ticker.Execute(() => false);
             Assert.False(boolStats.Result);
+        }
+
+        [Fact]
+        public async Task Ticker_WithAsyncBody_ExecutesBody()
+        {
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOpAsync());
+
+            {
+                var stats = await ticker.ExecuteAsync(() => Task.Delay(100));
+                Assert.Equal(1, stats.Executions);
+                Assert.Equal(0, stats.Exceptions);
+                Assert.NotEqual(0, stats.TotalMilliseconds);
+            }
+
+            {
+                var stats = await ticker.ExecuteAsync(() => Task.FromResult(1701));
+                Assert.Equal(1701, stats.Result);
+            }
+            
         }
     }
 }
