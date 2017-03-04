@@ -6,7 +6,7 @@ using Xunit;
 using Polly;
 using PollyTick;
 
-namespace Tests
+namespace PollyTickTests
 {
     public class Tests
     {

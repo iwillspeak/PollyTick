@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace PollyTick
 {
@@ -11,9 +12,9 @@ namespace PollyTick
     {
         public void OnExecute(Statistics statistics)
         {
-            _executions += statistics.Executions;
-            _exceptions += statistics.Exceptions;
-            _totalMillisecons += statistics.TotalMilliseconds;
+            Interlocked.Add(ref _executions, statistics.Executions);
+            Interlocked.Add(ref _exceptions, statistics.Exceptions);
+            Interlocked.Add(ref _totalMilliseconds, statistics.TotalMilliseconds);
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace PollyTick
 
         ///   The total number of Milliseconds taken by all observed executions.
         /// </summary>
-        public long TotalMilliseconds => _totalMillisecons;
-        private long _totalMillisecons;
+        public long TotalMilliseconds => _totalMilliseconds;
+        private long _totalMilliseconds;
     }
 }
