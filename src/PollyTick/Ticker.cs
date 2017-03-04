@@ -1,6 +1,4 @@
-﻿using System;
-
-using Polly;
+﻿using Polly;
 
 namespace PollyTick
 {

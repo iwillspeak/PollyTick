@@ -90,7 +90,40 @@ namespace Tests
                 var stats = await ticker.ExecuteAsync(() => Task.FromResult(1701));
                 Assert.Equal(1701, stats.Result);
             }
+        }
+
+        [Fact]
+        public void Ticker_ExecuteWithObserver_ObserverSeesStatistics()
+        {
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOp());
+            var observer = new BookkeepingObserver();
+            var stats = ticker.Execute(() => { }, observer);
+
+            Assert.Equal(1, stats.Executions);
+            Assert.Equal(0, observer.Exceptions);
+            Assert.Equal(1, observer.Executions);
+            Assert.Equal(stats.TotalMilliseconds, observer.TotalMilliseconds);
+
+            stats = ticker.Execute(() => { throw new Exception(); }, observer);
+            Assert.Equal(1, stats.Executions);
+            Assert.Equal(1, observer.Exceptions);
+            Assert.Equal(2, observer.Executions);
+        }
+
+        [Fact]
+        public async Task Ticker_AsyncExecuteWithObserver_ObserverSeesStatistics()
+        {
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOpAsync());
+            var observer = new BookkeepingObserver();
+
+            var stats = await ticker.ExecuteAsync(() => Task.CompletedTask, observer);
             
+            Assert.Equal(1, stats.Executions);
+            Assert.Equal(0, observer.Exceptions);
+            Assert.Equal(1, observer.Executions);
+            Assert.Equal(stats.TotalMilliseconds, observer.TotalMilliseconds);
         }
     }
 }
