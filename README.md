@@ -10,7 +10,7 @@ This library is aims to provide a simple wrapper for the wonderful [Polly](http:
  - [x] Allow `async` policy execution.
  - [x] Policies with results.
  - [ ] Make capturing of Exceptions optional?
- - [ ] Allow observer registration.
+ - [x] Allow observer registration.
 
 ## 🐉 Here be Dragons! 🐉
 

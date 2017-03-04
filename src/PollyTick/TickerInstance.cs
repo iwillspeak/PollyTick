@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Polly;
+using System.Collections.Generic;
 
 namespace PollyTick
 {
@@ -10,6 +11,17 @@ namespace PollyTick
         public TickerInstance(Policy policy)
         {
             _policy = policy;
+            _observers = new List<IStatisticsObserver>(3);
+        }
+
+        /// <summary>
+        ///   Register a statistics observer. The observer will be called
+        ///   for all executions of this TickerInstance.
+        /// </summary>
+        public TickerInstance WithObserver(IStatisticsObserver observer)
+        {
+            _observers.Add(observer);
+            return this;
         }
 
         /// <summary>
@@ -113,10 +125,15 @@ namespace PollyTick
             var stats = new Statistics<T>(1, failures, sw.ElapsedMilliseconds, result.Result);
             
             observer.OnExecute(stats);
+            foreach (var obs in _observers)
+            {
+                obs.OnExecute(stats);
+            }
 
             return stats;
         }
 
         private Policy _policy;
+        private List<IStatisticsObserver> _observers;
     }
 }

@@ -125,5 +125,43 @@ namespace PollyTickTests
             Assert.Equal(1, observer.Executions);
             Assert.Equal(stats.TotalMilliseconds, observer.TotalMilliseconds);
         }
+
+        [Fact]
+        public async Task Ticker_WithGlobalObserver_AllObserversAreNotified()
+        {
+            var global = new BookkeepingObserver();
+            var sync = new BookkeepingObserver();
+            var async = new BookkeepingObserver();
+
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOp())
+                .WithObserver(global)
+                .WithObserver(sync);
+
+            var aticker = Ticker
+                .WithPolicy(Policy.NoOpAsync())
+                .WithObserver(global)
+                .WithObserver(async);
+            
+            {
+                var one = new BookkeepingObserver();
+                ticker.Execute(() => 1000, one);
+                await aticker.ExecuteAsync(() => Task.CompletedTask, one);
+                ticker.Execute(() => { throw new Exception(); });
+                await aticker.ExecuteAsync(() => Task.FromException(new Exception()));
+
+                Assert.Equal(2, one.Executions);
+                Assert.Equal(0, one.Exceptions);
+
+                Assert.Equal(4, global.Executions);
+                Assert.Equal(2, global.Exceptions);
+
+                Assert.Equal(2, sync.Executions);
+                Assert.Equal(1, sync.Exceptions);
+
+                Assert.Equal(2, async.Executions);
+                Assert.Equal(1, async.Exceptions);
+            }
+        }
     }
 }
