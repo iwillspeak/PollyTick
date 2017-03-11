@@ -1,3 +1,5 @@
+using System;
+
 namespace PollyTick
 {
     /// <statistics>
@@ -7,6 +9,10 @@ namespace PollyTick
     public class NullObserver : IStatisticsObserver
     {
         public void OnExecute(Statistics statistics)
+        {
+        }
+
+        public void OnException(Exception exception)
         {
         }
     }

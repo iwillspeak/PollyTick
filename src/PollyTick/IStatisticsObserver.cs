@@ -1,3 +1,5 @@
+using System;
+
 namespace PollyTick
 {
     public interface IStatisticsObserver
@@ -7,5 +9,10 @@ namespace PollyTick
         ///   from the execution when it completes.
         /// </summary>
         void OnExecute(Statistics statistics);
+
+        /// <summary>
+        ///   Observes an Exception during execution
+        /// </summary>
+        void OnException(Exception exception);
     }
 }

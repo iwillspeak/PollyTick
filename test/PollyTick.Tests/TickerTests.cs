@@ -163,5 +163,29 @@ namespace PollyTickTests
                 Assert.Equal(1, async.Exceptions);
             }
         }
+
+        [Fact]
+        public void Ticker_WhenExceptionIsThrown_ObserverIsNotified()
+        {
+            var global = new BookkeepingObserver();
+            var one = new BookkeepingObserver();
+            var ex = new Exception("hello");
+
+            var ticker = Ticker
+                .WithPolicy(Policy.NoOp())
+                .WithObserver(global);
+
+            ticker.Execute(() => 
+                    {
+                        throw ex;
+                    }, one);
+            
+            Assert.Equal(1, global.Exceptions);
+            Assert.Equal(1, global.Executions);
+            Assert.Equal(1, one.Exceptions);
+            Assert.Equal(1, one.Executions);
+            Assert.Equal(ex, global.LastException);
+            Assert.Equal(ex, one.LastException);
+        }
     }
 }

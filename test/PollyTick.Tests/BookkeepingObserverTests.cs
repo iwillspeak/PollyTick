@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PollyTick;
 using Xunit;
+using System;
 
 namespace PollyTickTests
 {
@@ -27,5 +28,16 @@ namespace PollyTickTests
             Assert.Equal(200, bookkeeper.Exceptions);
             Assert.Equal(300, bookkeeper.TotalMilliseconds);
         }
-    }
+ 
+        [Fact]
+        public void Bookkeeper_WhenExceptionsAreThwon_StoresLastException()
+        {
+            var bookkeeper = new BookkeepingObserver();
+
+            var ex1 = new Exception("one");
+            bookkeeper.OnException(ex1);
+
+            Assert.Equal(ex1, bookkeeper.LastException);
+        }
+   }
 }
