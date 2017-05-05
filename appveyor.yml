@@ -1,9 +1,9 @@
 version: 0.0.{build}-pre
-image: Visual Studio 2015
+image: Visual Studio 2017
 install:
   - ps: dotnet --version
   - ps: dotnet restore
 build_script:
-  - ps: dotnet build src/*/project.json
+  - ps: dotnet build Polly.Tick.sln
 test_script:
   - ps: ForEach ($folder in (Get-ChildItem -Path test -Directory)) { dotnet test $folder.FullName }
