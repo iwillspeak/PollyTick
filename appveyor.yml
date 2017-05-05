@@ -6,4 +6,4 @@ install:
 build_script:
   - ps: dotnet build Polly.Tick.sln
 test_script:
-  - ps: ForEach ($folder in (Get-ChildItem -Path test -Directory)) { dotnet test $folder.FullName }
+  - ps: ForEach ($proj in (Get-ChildItem -Path test -Recurse -Filter '*.csproj')) { dotnet test $proj.FullName }
