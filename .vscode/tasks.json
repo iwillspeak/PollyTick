@@ -11,14 +11,14 @@
     "tasks": [
         {
             "taskName": "build",
-            "args": [ "**/project.json" ],
+            "args": [ "Polly.Tick.sln" ],
             "isBuildCommand": true,
             "showOutput": "silent",
             "problemMatcher": "$msCompile"
         },
         {
             "taskName": "test",
-            "args": [ "test/PollyTick.Tests" ],
+            "args": [ "test/PollyTick.Tests/PollyTick.Tests.csproj" ],
             "isTestCommand": true,
             "showOutput": "always",
             "problemMatcher": "$msCompile"
