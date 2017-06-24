@@ -74,6 +74,23 @@ namespace PollyTickTests
         }
 
         [Fact]
+        public void Ticker_WhenPolicyHasKnownReturnType_PolicyCanBeUsed()
+        {
+            var i = 100;
+            var policy = Policy
+                .HandleResult(100)
+                .Retry();
+            var ticker = Ticker
+                .WithPolicy(policy);
+
+            var stats1 = ticker.Execute(() => i++);
+            var stats2 = ticker.Execute(() => i++);
+
+            Assert.Equal(101, stats1.Result);
+            Assert.Equal(102, stats2.Result);
+        }
+
+        [Fact]
         public async Task Ticker_WithAsyncBody_ExecutesBody()
         {
             var ticker = Ticker

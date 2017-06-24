@@ -2,16 +2,14 @@ using System;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Polly;
-using System.Collections.Generic;
 
 namespace PollyTick
 {
-    public class TickerInstance
+    public class TickerInstance : TickerInstanceBase
     {
         public TickerInstance(Policy policy)
         {
             _policy = policy;
-            _observers = new List<IStatisticsObserver>(3);
         }
 
         /// <summary>
@@ -20,7 +18,7 @@ namespace PollyTick
         /// </summary>
         public TickerInstance WithObserver(IStatisticsObserver observer)
         {
-            _observers.Add(observer);
+            AddObserver(observer);
             return this;
         }
 
@@ -112,37 +110,6 @@ namespace PollyTick
             return StatisticsFromResult(result, sw, observer);
         }
 
-        /// <summary>
-        ///   Convert a Polly `ExecutionResult` into an instance of
-        ///   our `Statistics` class.
-        /// </summary>
-        private Statistics<T> StatisticsFromResult<T>(
-            PolicyResult<T> result,
-            Stopwatch sw,
-            IStatisticsObserver observer)
-        {
-            var failures = result.Outcome == OutcomeType.Successful ?  0 : 1;
-            var stats = new Statistics<T>(1, failures, sw.ElapsedMilliseconds, result.Result);
-
-            if (result.FinalException != null)
-            {
-                observer.OnException(result.FinalException);
-                foreach (var obs in _observers)
-                {
-                    obs.OnException(result.FinalException);
-                } 
-            }
-
-            observer.OnExecute(stats);
-            foreach (var obs in _observers)
-            {
-                obs.OnExecute(stats);
-            }
-
-            return stats;
-        }
-
         private Policy _policy;
-        private List<IStatisticsObserver> _observers;
     }
 }

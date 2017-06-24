@@ -8,5 +8,10 @@ namespace PollyTick
         {
             return new TickerInstance(policy);
         }
+
+        public static TickerInstance<T> WithPolicy<T>(Policy<T> policy)
+        {
+            return new TickerInstance<T>(policy);
+        }
     }
 }
