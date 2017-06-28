@@ -54,7 +54,7 @@ namespace PollyTickTests
                 .Execute(() => Thread.Sleep(TimeSpan.FromSeconds(0.1)));
             Assert.Equal(1, stats.Executions);
             Assert.Equal(0, stats.Exceptions);
-            Assert.NotEqual(0, stats.TotalMilliseconds);
+            Assert.NotEqual(TimeSpan.Zero, stats.Elapsed);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace PollyTickTests
                 var stats = await ticker.ExecuteAsync(() => Task.Delay(100));
                 Assert.Equal(1, stats.Executions);
                 Assert.Equal(0, stats.Exceptions);
-                Assert.NotEqual(0, stats.TotalMilliseconds);
+                Assert.NotEqual(TimeSpan.Zero, stats.Elapsed);
             }
 
             {
@@ -120,7 +120,7 @@ namespace PollyTickTests
             Assert.Equal(1, stats.Executions);
             Assert.Equal(0, observer.Exceptions);
             Assert.Equal(1, observer.Executions);
-            Assert.Equal(stats.TotalMilliseconds, observer.TotalMilliseconds);
+            Assert.Equal(stats.Elapsed, observer.Elapsed);
 
             stats = ticker.Execute(() => { throw new Exception(); }, observer);
             Assert.Equal(1, stats.Executions);
@@ -140,7 +140,7 @@ namespace PollyTickTests
             Assert.Equal(1, stats.Executions);
             Assert.Equal(0, observer.Exceptions);
             Assert.Equal(1, observer.Executions);
-            Assert.Equal(stats.TotalMilliseconds, observer.TotalMilliseconds);
+            Assert.Equal(stats.Elapsed, observer.Elapsed);
         }
 
         [Fact]

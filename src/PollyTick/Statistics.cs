@@ -1,3 +1,5 @@
+using System;
+
 namespace PollyTick
 {
     /// <summary>
@@ -7,11 +9,11 @@ namespace PollyTick
     /// </summary>
     public class Statistics
     {
-        public Statistics(int executions, int exceptions, long totalMillis)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed)
         {
             Executions = executions;
             Exceptions = exceptions;
-            TotalMilliseconds = totalMillis;
+            Elapsed = elapsed;
         }
 
         /// <summary>
@@ -27,10 +29,9 @@ namespace PollyTick
         public int Exceptions { get; }
 
         /// <summary>
-        ///   The total number of milliseconds taken for all
-        ///   executions.
+        ///   The total elapsed time for all executions.
         /// </summary>
-        public long TotalMilliseconds { get; }
+        public TimeSpan Elapsed { get; }
     }
 
     /// <summary>
@@ -38,8 +39,8 @@ namespace PollyTick
     /// </summary>
     public class Statistics<T> : Statistics
     {
-        public Statistics(int executions, int exceptions, long totalMillis, T result)
-            : base(executions, exceptions, totalMillis)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed, T result)
+            : base(executions, exceptions, elapsed)
         {
             Result = result;
         }

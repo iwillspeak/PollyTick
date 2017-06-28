@@ -29,7 +29,7 @@ namespace PollyTick
             IStatisticsObserver observer)
         {
             var failures = result.Outcome == OutcomeType.Successful ?  0 : 1;
-            var stats =  new Statistics<TResult>(1, failures, sw.ElapsedMilliseconds, result.Result);
+            var stats =  new Statistics<TResult>(1, failures, sw.Elapsed, result.Result);
 
             if (result.FinalException != null)
             {

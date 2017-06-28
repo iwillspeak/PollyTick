@@ -14,7 +14,7 @@ namespace PollyTick
         {
             Interlocked.Add(ref _executions, statistics.Executions);
             Interlocked.Add(ref _exceptions, statistics.Exceptions);
-            Interlocked.Add(ref _totalMilliseconds, statistics.TotalMilliseconds);
+            Interlocked.Add(ref _totalTimespanTicks, statistics.Elapsed.Ticks);
         }
 
         public void OnException(Exception exception)
@@ -35,10 +35,11 @@ namespace PollyTick
         private int _exceptions;
 
         /// <summary>
-        ///   The total number of Milliseconds taken by all observed executions.
+        ///   The total execution time observed by this instance
+        ///   overall, as a <see cref="TimeSpan" />.
         /// </summary>
-        public long TotalMilliseconds => _totalMilliseconds;
-        private long _totalMilliseconds;
+        public TimeSpan Elapsed => TimeSpan.FromTicks(_totalTimespanTicks);
+        private long _totalTimespanTicks;
 
         /// <summary>
         ///   The last exception observed by this listener.

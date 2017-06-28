@@ -41,7 +41,7 @@ Naturally there's `async` support too:
 var stats = await Ticker
     .WithPolicy(Policy.NoOpAsync())
     .ExecuteAsync(() => Task.Delay(100));
-Assert.True(stats.TotalMilliseconds >= 100);
+Assert.True(stats.Elapsed >= TimeSpan.FromMilliseconds(100));
 ```
 
 ## Installation
@@ -59,10 +59,9 @@ or for .NET Core update `project.json`
  - [x] Keep track of Execution Time
  - [x] Allow `async` policy execution.
  - [x] Policies with results.
- - [ ] Make capturing of Exceptions optional?
+ - [ ] Make capturing of Exceptions optional? Yes: #4
  - [x] Allow observer registration.
 
 ## 🐉 Here be Dragons! 🐉
 
 This library is quite new. It's pretty much feature complete but hasn't been tried in the wild yet.
-

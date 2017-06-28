@@ -18,7 +18,7 @@ namespace PollyTickTests
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    bookkeeper.OnExecute(new Statistics(1, 2, 3));
+                    bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3)));
                 }));
             }
 
@@ -26,7 +26,7 @@ namespace PollyTickTests
 
             Assert.Equal(100, bookkeeper.Executions);
             Assert.Equal(200, bookkeeper.Exceptions);
-            Assert.Equal(300, bookkeeper.TotalMilliseconds);
+            Assert.Equal(300, bookkeeper.Elapsed.TotalSeconds);
         }
  
         [Fact]

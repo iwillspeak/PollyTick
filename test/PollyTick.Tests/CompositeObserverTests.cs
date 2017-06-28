@@ -13,14 +13,14 @@ namespace PollyTickTests
             var book2 = new BookkeepingObserver();
             var observer = new CompositeObserver(book1, book2);
                                                  
-            observer.OnExecute(new Statistics(1, 2, 3));
+            observer.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3)));
 
             Assert.Equal(1, book1.Executions);
             Assert.Equal(1, book2.Executions);
             Assert.Equal(2, book1.Exceptions);
             Assert.Equal(2, book2.Exceptions);
-            Assert.Equal(3, book1.TotalMilliseconds);
-            Assert.Equal(3, book2.TotalMilliseconds);
+            Assert.Equal(3, book1.Elapsed.TotalSeconds);
+            Assert.Equal(3, book2.Elapsed.TotalSeconds);
         }
 
         [Fact]
