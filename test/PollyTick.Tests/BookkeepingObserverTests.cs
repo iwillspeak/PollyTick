@@ -39,5 +39,20 @@ namespace PollyTickTests
 
             Assert.Equal(ex1, bookkeeper.LastException);
         }
+
+        [Fact]
+        public void Bookkeeper_ConvertedToStatistics_ExposesStatisticsSnapshot()
+        {
+            var bookkeeper = new BookkeepingObserver();
+
+            bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromTicks(3)));
+            bookkeeper.OnExecute(new Statistics(4, 5, TimeSpan.FromTicks(6)));
+
+            var stats = bookkeeper.IntoStatistics();
+
+            Assert.Equal(5, stats.Executions);
+            Assert.Equal(7, stats.Exceptions);
+            Assert.Equal(9, stats.Elapsed.Ticks);
+        }
    }
 }

@@ -23,6 +23,18 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Get the current state of this observer as a <see
+        ///   cref="Statistics" /> instance.
+        /// </summary>
+        public Statistics IntoStatistics()
+        {
+            int executions = _executions;
+            int exceptions = _exceptions;
+            long ticks = Interlocked.Read(ref _totalTimespanTicks);
+            return new Statistics(executions, exceptions, TimeSpan.FromTicks(ticks));
+        }
+
+        /// <summary>
         ///   The number of Executions observed by this instance overall.
         /// </summary>
         public int Executions => _executions;
@@ -38,7 +50,7 @@ namespace PollyTick
         ///   The total execution time observed by this instance
         ///   overall, as a <see cref="TimeSpan" />.
         /// </summary>
-        public TimeSpan Elapsed => TimeSpan.FromTicks(_totalTimespanTicks);
+        public TimeSpan Elapsed => TimeSpan.FromTicks(Interlocked.Read(ref _totalTimespanTicks));
         private long _totalTimespanTicks;
 
         /// <summary>
