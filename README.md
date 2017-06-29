@@ -48,11 +48,11 @@ Assert.True(stats.Elapsed >= TimeSpan.FromMilliseconds(100));
 
 You can get your hands on `PollyTick` from Nuget.
 
-    PM> Install-Package PollyTick -Pre
+    PM> Install-Package PollyTick
 
 or for .NET Core update `project.json`
 
-    "PollyTick": "0.1.0-pre",
+    "PollyTick": "0.2.0",
 
 ## Feature Status
 
