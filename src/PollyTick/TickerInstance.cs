@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Polly;
+using System.Threading;
 
 namespace PollyTick
 {
@@ -74,17 +75,40 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute an awaitable action with instrumentation,
+        ///   returning the statistics for this execution.
+        /// </summary>
+        public Task<Statistics> ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken token)
+        {
+            return ExecuteAsync(action, new NullObserver(), token);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
         /// </summary>
-        public async Task<Statistics> ExecuteAsync(Func<Task> action, IStatisticsObserver observer)
+        public Task<Statistics> ExecuteAsync(Func<Task> action, IStatisticsObserver observer)
         {
-            return await ExecuteAsync(async () => {
-                    await action();
+            return ExecuteAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
+        ///   Execute an awaitable action with instrumentation and a statistics
+        ///   observer, returning the execution statistics. The statistics observer
+        ///   will recieve a callback with the outcome of the execution.
+        /// </summary>
+        public async Task<Statistics> ExecuteAsync(
+            Func<CancellationToken, Task> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
+        {
+            return await ExecuteAsync(async ct => {
+                    await action(ct);
                     return 0;
                 },
-                observer);
+                observer,
+                token);
         }
 
         /// <summary>
@@ -97,14 +121,36 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute an awaitable action with instrumentation,
+        ///   returning the statistics and execution result.
+        /// </summary>
+        public Task<Statistics<T>> ExecuteAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken token)
+        {
+            return ExecuteAsync(action, new NullObserver(), token);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
         /// </summary>
-        public async Task<Statistics<T>> ExecuteAsync<T>(Func<Task<T>> action, IStatisticsObserver observer)
+        public Task<Statistics<T>> ExecuteAsync<T>(Func<Task<T>> action, IStatisticsObserver observer)
+        {
+            return ExecuteAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
+        ///   Execute an awaitable action with instrumentation and a statistics
+        ///   observer, returning the execution statistics. The statistics observer
+        ///   will recieve a callback with the outcome of the execution.
+        /// </summary>
+        public async Task<Statistics<T>> ExecuteAsync<T>(
+            Func<CancellationToken, Task<T>> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
         {
             var sw = Stopwatch.StartNew();
-            var result = await _policy.ExecuteAndCaptureAsync(action);
+            var result = await _policy.ExecuteAndCaptureAsync(action, token);
             sw.Stop();
 
             return StatisticsFromResult(result, sw, observer);
