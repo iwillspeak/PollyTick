@@ -204,5 +204,17 @@ namespace PollyTickTests
             Assert.Equal(ex, global.LastException);
             Assert.Equal(ex, one.LastException);
         }
+
+        [Fact]
+        public async Task Ticker_ExecuteWithCancellationToken_StopsExecution()
+        {
+            var ticker = Ticker.WithPolicy(Policy.NoOpAsync());
+            var cts = new CancellationTokenSource();
+            
+            var exTask = ticker.ExecuteAsync(ct => Task.Delay(TimeSpan.FromSeconds(5), ct), cts.Token);
+            Assert.False(exTask.IsCompleted);
+            cts.Cancel();
+            var res = await exTask;
+        }
     }
 }

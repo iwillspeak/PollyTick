@@ -2,13 +2,13 @@ using System;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Polly;
+using System.Threading;
 
 namespace PollyTick
 {
     public class TickerInstance<T> : TickerInstanceBase
     {
         public TickerInstance(Policy<T> policy)
-            : base()
         {
             _policy = policy;
         }
@@ -56,14 +56,40 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute an awaitable action with instrumentation,
+        ///   returning the statistics and execution result.
+        /// </summary>
+        public Task<Statistics<T>> ExecuteAsync(
+            Func<CancellationToken, Task<T>> action,
+            CancellationToken token)
+        {
+            return ExecuteAsync(action, new NullObserver(), token);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
         /// </summary>
-        public async Task<Statistics<T>> ExecuteAsync(Func<Task<T>> action, IStatisticsObserver observer)
+        public Task<Statistics<T>> ExecuteAsync(
+            Func<Task<T>> action,
+            IStatisticsObserver observer)
+        {
+            return ExecuteAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
+        ///   Execute an awaitable action with instrumentation and a statistics
+        ///   observer, returning the execution statistics. The statistics observer
+        ///   will recieve a callback with the outcome of the execution.
+        /// </summary>
+        public async Task<Statistics<T>> ExecuteAsync(
+            Func<CancellationToken, Task<T>> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
         {
             var sw = Stopwatch.StartNew();
-            var result = await _policy.ExecuteAndCaptureAsync(action);
+            var result = await _policy.ExecuteAndCaptureAsync(action, token);
             sw.Stop();
 
             return StatisticsFromResult(result, sw, observer);
