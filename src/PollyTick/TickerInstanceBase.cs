@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Polly;
@@ -28,25 +29,35 @@ namespace PollyTick
             Stopwatch sw,
             IStatisticsObserver observer)
         {
-            var failures = result.Outcome == OutcomeType.Successful ?  0 : 1;
-            var stats =  new Statistics<TResult>(1, failures, sw.Elapsed, result.Result);
+            var failures = result.Outcome == OutcomeType.Successful ? 0 : 1;
+            var stats = new Statistics<TResult>(1, failures, sw.Elapsed, result.Result);
 
             if (result.FinalException != null)
             {
-                observer.OnException(result.FinalException);
-                foreach (var obs in _observers)
-                {
-                    obs.OnException(result.FinalException);
-                } 
+                OnException(result.FinalException, observer);
             }
 
+            OnExecute(stats, observer);
+
+            return stats;
+        }
+
+        protected void OnExecute(Statistics stats, IStatisticsObserver observer)
+        {
             observer.OnExecute(stats);
             foreach (var obs in _observers)
             {
                 obs.OnExecute(stats);
             }
+        }
 
-            return stats;
+        protected void OnException(Exception exception, IStatisticsObserver observer)
+        {
+            observer.OnException(exception);
+            foreach (var obs in _observers)
+            {
+                obs.OnException(exception);
+            }
         }
 
         private List<IStatisticsObserver> _observers;

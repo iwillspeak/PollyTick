@@ -47,6 +47,34 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public T ExecuteNoCapture(Func<T> action, IStatisticsObserver observer)
+        {
+            var sw = Stopwatch.StartNew();
+            int exceptions = 0;
+            T result = default(T);
+            try
+            {
+                result = _policy.Execute(action);
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnException(e, observer);
+                exceptions++;
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                OnExecute(stats, observer);
+            }
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation,
         ///   returning the statistics and execution result.
         /// </summary>
@@ -79,6 +107,15 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public Task<T> ExecuteNoCaptureAsync(Func<Task<T>> action, IStatisticsObserver observer)
+        {
+            return ExecuteNoCaptureAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
@@ -93,6 +130,37 @@ namespace PollyTick
             sw.Stop();
 
             return StatisticsFromResult(result, sw, observer);
+        }
+
+        /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public async Task<T> ExecuteNoCaptureAsync(
+            Func<CancellationToken, Task<T>> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
+        {
+            var sw = Stopwatch.StartNew();
+            var exceptions = 0;
+            T result = default(T);
+            try
+            {
+                result = await _policy.ExecuteAsync(action, token);
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnException(e, observer);
+                exceptions++;
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                OnExecute(stats, observer);
+            }
         }
 
         private Policy<T> _policy;
