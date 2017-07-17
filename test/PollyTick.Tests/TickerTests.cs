@@ -290,5 +290,66 @@ namespace PollyTickTests
             Assert.IsType<TaskCanceledException>(local.LastException);
             Assert.IsType<TaskCanceledException>(global.LastException);
         }
+
+        [Fact]
+        public void Ticker_ExecuteUntypedPolicyNoCapture_StatistcsAreReported()
+        {
+            var global = new BookkeepingObserver();
+            var ticker = Ticker.WithPolicy(Policy.NoOp())
+                .WithObserver(global);
+            var local = new BookkeepingObserver();
+            var zero = 1 - 1;
+
+            var result = ticker.ExecuteNoCapture(() => 19534, local);
+            Assert.Throws<DivideByZeroException>(() =>
+                    {
+                        ticker.ExecuteNoCapture(() => checked(100 / zero), local);
+                    });
+
+            Assert.Equal(2, local.Executions);
+            Assert.Equal(2, global.Executions);
+            Assert.Equal(1, local.Exceptions);
+            Assert.Equal(1, global.Exceptions);
+            Assert.True(local.Elapsed > TimeSpan.Zero);
+            Assert.True(global.Elapsed > TimeSpan.Zero);
+            Assert.Equal(local.Elapsed, global.Elapsed);
+            Assert.IsType<DivideByZeroException>(local.LastException);
+            Assert.IsType<DivideByZeroException>(global.LastException);
+        }
+
+        [Fact]
+        public async Task Ticker_ExecuteUntypedPolicyNoCaptureAsync_StatisticsAreReported()
+        {
+            var global = new BookkeepingObserver();
+            var ticker = Ticker.WithPolicy(Policy.NoOpAsync())
+                .WithObserver(global);
+            var local = new BookkeepingObserver();
+            var run = false;
+
+            await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+                    {
+                        var cts = new CancellationTokenSource(100);
+                        await ticker.ExecuteNoCaptureAsync(async ct =>
+                                {
+                                    await Task.Delay(10_000, ct);
+                                }, local, cts.Token);
+                    });
+            await ticker.ExecuteNoCaptureAsync(() => {
+                    run = true;
+                    return Task.CompletedTask;
+                },
+                local);
+
+            Assert.True(run);
+            Assert.Equal(2, local.Executions);
+            Assert.Equal(2, global.Executions);
+            Assert.Equal(1, local.Exceptions);
+            Assert.Equal(1, global.Exceptions);
+            Assert.True(local.Elapsed > TimeSpan.Zero);
+            Assert.True(global.Elapsed > TimeSpan.Zero);
+            Assert.Equal(local.Elapsed, global.Elapsed);
+            Assert.IsType<TaskCanceledException>(local.LastException);
+            Assert.IsType<TaskCanceledException>(global.LastException);
+        }
     }
 }

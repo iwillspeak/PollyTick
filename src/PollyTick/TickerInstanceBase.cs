@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Polly;
 
 namespace PollyTick
@@ -40,6 +42,63 @@ namespace PollyTick
             OnExecute(stats, observer);
 
             return stats;
+        }
+
+        /// <summary>
+        ///   Internal implementation of the `ExecuteNoCapture`.
+        /// </summary>
+        protected T ExecuteNoCaptureInternal<T>(Func<T> action, IStatisticsObserver observer)
+        {
+            var sw = Stopwatch.StartNew();
+            int exceptions = 0;
+            T result = default(T);
+            try
+            {
+                result = action();
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnException(e, observer);
+                exceptions++;
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                OnExecute(stats, observer);
+            }
+        }
+
+        /// <summary>
+        ///   Internal implementation of the `ExecuteNoCaptureAsync`.
+        /// </summary>
+        protected async Task<T> ExecuteNoCaptureInternalAsync<T>(
+            Func<CancellationToken, Task<T>> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
+        {
+            var sw = Stopwatch.StartNew();
+            var exceptions = 0;
+            T result = default(T);
+            try
+            {
+                result = await action(token);
+                return result;
+            }
+            catch (Exception e)
+            {
+                OnException(e, observer);
+                exceptions++;
+                throw;
+            }
+            finally
+            {
+                sw.Stop();
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                OnExecute(stats, observer);
+            }
         }
 
         protected void OnExecute(Statistics stats, IStatisticsObserver observer)

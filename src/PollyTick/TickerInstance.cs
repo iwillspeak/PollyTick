@@ -43,6 +43,15 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public void ExecuteNoCapture(Action action, IStatisticsObserver observer)
+        {
+            ExecuteNoCapture(() => { action(); return 0; }, observer);
+        }
+
+        /// <summary>
         ///  Execute the instrumented body, returning the execution
         ///  statistics and execution result.
         /// </summary>
@@ -63,6 +72,15 @@ namespace PollyTick
             sw.Stop();
             
             return StatisticsFromResult(result, sw, observer);
+        }
+
+        /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public T ExecuteNoCapture<T>(Func<T> action, IStatisticsObserver observer)
+        {
+            return ExecuteNoCaptureInternal(() => _policy.Execute(action), observer);
         }
 
         /// <summary>
@@ -94,6 +112,15 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public Task ExecuteNoCaptureAsync(Func<Task> action, IStatisticsObserver observer)
+        {
+            return ExecuteNoCaptureAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
@@ -111,6 +138,23 @@ namespace PollyTick
                 token);
         }
 
+        /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public async Task ExecuteNoCaptureAsync(
+            Func<CancellationToken, Task> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
+        {
+            await ExecuteNoCaptureAsync(async ct => {
+                    await action(ct);
+                    return 0;
+                },
+                observer,
+                token);
+        }
+        
         /// <summary>
         ///   Execute an awaitable action with instrumentation,
         ///   returning the statistics and execution result.
@@ -140,6 +184,15 @@ namespace PollyTick
         }
 
         /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public Task<T> ExecuteNoCaptureAsync<T>(Func<Task<T>> action, IStatisticsObserver observer)
+        {
+            return ExecuteNoCaptureAsync(_ => action(), observer, CancellationToken.None);
+        }
+
+        /// <summary>
         ///   Execute an awaitable action with instrumentation and a statistics
         ///   observer, returning the execution statistics. The statistics observer
         ///   will recieve a callback with the outcome of the execution.
@@ -154,6 +207,22 @@ namespace PollyTick
             sw.Stop();
 
             return StatisticsFromResult(result, sw, observer);
+        }
+
+
+        /// <summary>
+        ///   Execute the Instrumented body without capturing
+        ///   exceptions or intercepting the result.
+        /// </summary>
+        public Task<T> ExecuteNoCaptureAsync<T>(
+            Func<CancellationToken, Task<T>> action,
+            IStatisticsObserver observer,
+            CancellationToken token)
+        {
+            return ExecuteNoCaptureInternalAsync(
+                ct => _policy.ExecuteAsync(action, ct),
+                observer,
+                token);
         }
 
         private Policy _policy;
