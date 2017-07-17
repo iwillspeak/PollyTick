@@ -52,26 +52,7 @@ namespace PollyTick
         /// </summary>
         public T ExecuteNoCapture(Func<T> action, IStatisticsObserver observer)
         {
-            var sw = Stopwatch.StartNew();
-            int exceptions = 0;
-            T result = default(T);
-            try
-            {
-                result = _policy.Execute(action);
-                return result;
-            }
-            catch (Exception e)
-            {
-                OnException(e, observer);
-                exceptions++;
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
-                OnExecute(stats, observer);
-            }
+            return ExecuteNoCaptureInternal(() => _policy.Execute(action), observer);
         }
 
         /// <summary>
@@ -136,31 +117,15 @@ namespace PollyTick
         ///   Execute the Instrumented body without capturing
         ///   exceptions or intercepting the result.
         /// </summary>
-        public async Task<T> ExecuteNoCaptureAsync(
+        public Task<T> ExecuteNoCaptureAsync(
             Func<CancellationToken, Task<T>> action,
             IStatisticsObserver observer,
             CancellationToken token)
         {
-            var sw = Stopwatch.StartNew();
-            var exceptions = 0;
-            T result = default(T);
-            try
-            {
-                result = await _policy.ExecuteAsync(action, token);
-                return result;
-            }
-            catch (Exception e)
-            {
-                OnException(e, observer);
-                exceptions++;
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
-                OnExecute(stats, observer);
-            }
+            return ExecuteNoCaptureInternalAsync(
+                ct => _policy.ExecuteAsync(action, ct),
+                observer,
+                token);
         }
 
         private Policy<T> _policy;
