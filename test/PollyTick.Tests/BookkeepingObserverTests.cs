@@ -18,7 +18,7 @@ namespace PollyTickTests
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3)));
+                    bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3), null));
                 }));
             }
 
@@ -45,8 +45,8 @@ namespace PollyTickTests
         {
             var bookkeeper = new BookkeepingObserver();
 
-            bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromTicks(3)));
-            bookkeeper.OnExecute(new Statistics(4, 5, TimeSpan.FromTicks(6)));
+            bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromTicks(3), null));
+            bookkeeper.OnExecute(new Statistics(4, 5, TimeSpan.FromTicks(6), null));
 
             var stats = bookkeeper.IntoStatistics();
 

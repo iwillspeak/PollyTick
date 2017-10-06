@@ -32,7 +32,7 @@ namespace PollyTick
             IStatisticsObserver observer)
         {
             var failures = result.Outcome == OutcomeType.Successful ? 0 : 1;
-            var stats = new Statistics<TResult>(1, failures, sw.Elapsed, result.Result);
+            var stats = new Statistics<TResult>(1, failures, sw.Elapsed, result.FinalException, result.Result);
 
             if (result.FinalException != null)
             {
@@ -52,6 +52,7 @@ namespace PollyTick
             var sw = Stopwatch.StartNew();
             int exceptions = 0;
             T result = default(T);
+			Exception capturedException = null;
             try
             {
                 result = action();
@@ -60,13 +61,14 @@ namespace PollyTick
             catch (Exception e)
             {
                 OnException(e, observer);
+				capturedException = e;
                 exceptions++;
                 throw;
             }
             finally
             {
                 sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
                 OnExecute(stats, observer);
             }
         }
@@ -82,6 +84,7 @@ namespace PollyTick
             var sw = Stopwatch.StartNew();
             var exceptions = 0;
             T result = default(T);
+			Exception capturedException = null;
             try
             {
                 result = await action(token);
@@ -90,13 +93,14 @@ namespace PollyTick
             catch (Exception e)
             {
                 OnException(e, observer);
+				capturedException = e;
                 exceptions++;
                 throw;
             }
             finally
             {
                 sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, result);
+                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
                 OnExecute(stats, observer);
             }
         }

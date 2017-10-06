@@ -9,11 +9,12 @@ namespace PollyTick
     /// </summary>
     public class Statistics
     {
-        public Statistics(int executions, int exceptions, TimeSpan elapsed)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException)
         {
             Executions = executions;
             Exceptions = exceptions;
             Elapsed = elapsed;
+			FinalException = finalException;
         }
 
         /// <summary>
@@ -32,6 +33,11 @@ namespace PollyTick
         ///   The total elapsed time for all executions.
         /// </summary>
         public TimeSpan Elapsed { get; }
+
+		/// <summary>
+		///   The final exception seen by this statistics, if any.
+		/// </summary>
+		public Exception FinalException { get; }
     }
 
     /// <summary>
@@ -39,8 +45,8 @@ namespace PollyTick
     /// </summary>
     public class Statistics<T> : Statistics
     {
-        public Statistics(int executions, int exceptions, TimeSpan elapsed, T result)
-            : base(executions, exceptions, elapsed)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException, T result)
+            : base(executions, exceptions, elapsed, finalException)
         {
             Result = result;
         }
