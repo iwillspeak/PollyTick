@@ -31,7 +31,7 @@ namespace PollyTick
             int executions = _executions;
             int exceptions = _exceptions;
             long ticks = Interlocked.Read(ref _totalTimespanTicks);
-            return new Statistics(executions, exceptions, TimeSpan.FromTicks(ticks));
+            return new Statistics(executions, exceptions, TimeSpan.FromTicks(ticks), LastException);
         }
 
         /// <summary>
