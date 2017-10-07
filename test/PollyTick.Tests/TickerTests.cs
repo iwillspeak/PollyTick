@@ -351,5 +351,16 @@ namespace PollyTickTests
             Assert.IsType<TaskCanceledException>(local.LastException);
             Assert.IsType<TaskCanceledException>(global.LastException);
         }
+
+        [Fact]
+        public async Task Ticker_WhenExceptionIsCaptured_ExposedOnStatistics()
+        {
+            var ticker = Ticker.WithPolicy(Policy.NoOpAsync());
+
+            var stats = await ticker.ExecuteAsync(() => Task.FromException(new Exception("test_exception")));
+
+            Assert.NotNull(stats.FinalException);
+            Assert.Equal("test_exception", stats.FinalException.Message);
+        }
     }
 }

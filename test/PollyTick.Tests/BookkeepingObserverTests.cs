@@ -54,5 +54,17 @@ namespace PollyTickTests
             Assert.Equal(7, stats.Exceptions);
             Assert.Equal(9, stats.Elapsed.Ticks);
         }
+
+        [Fact]
+        public void Bookkeeper_WhenExceptionIsCaptured_ExposedInStatistics()
+        {
+            var bookkeeper = new BookkeepingObserver();
+
+            bookkeeper.OnException(new Exception("test"));
+            var stats = bookkeeper.IntoStatistics();
+
+            Assert.Equal("test", bookkeeper.LastException.Message);
+            Assert.Equal("test", stats.FinalException.Message);
+        }
    }
 }
