@@ -52,16 +52,12 @@ You can get your hands on `PollyTick` from Nuget.
 
 or for .NET Core update `project.json`
 
-    "PollyTick": "0.2.0",
+    "PollyTick": "0.4.0",
 
 ## Feature Status
 
  - [x] Keep track of Execution Time
  - [x] Allow `async` policy execution.
  - [x] Policies with results.
- - [ ] Make capturing of Exceptions optional? Yes: #4
+ - [x] Make capturing of Exceptions optional? Yes: #4
  - [x] Allow observer registration.
-
-## 🐉 Here be Dragons! 🐉
-
-This library is quite new. It's pretty much feature complete but hasn't been tried in the wild yet.
