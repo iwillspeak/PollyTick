@@ -4,6 +4,14 @@ Execution statistics for Polly policies.
 
 This library is aims to provide a simple wrapper for the wonderful [Polly](http://thepollyproject.org/) to collect statistics about policy executions. It aims to allow programmers keep track of what policies are costing them time, and provide a seam to observe policy executions.
 
+## Features
+
+ * Keep track of `Policy` execution time
+ * Allow `async` policy execution
+ * Supports policies with results
+ * Can capture exceptions, or allow them to trickle up the stack
+ * Collected statistics available through fine-grained observers
+
 ## Example
 
 PollyTick provides a fluent interface for observing the execution of Polly policies.
@@ -53,11 +61,3 @@ You can get your hands on `PollyTick` from Nuget.
 or for .NET Core update `project.json`
 
     "PollyTick": "0.4.0",
-
-## Feature Status
-
- - [x] Keep track of Execution Time
- - [x] Allow `async` policy execution.
- - [x] Policies with results.
- - [x] Make capturing of Exceptions optional? Yes: #4
- - [x] Allow observer registration.
