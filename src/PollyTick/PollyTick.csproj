@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="polly" Version="5.2.0" />
+    <PackageReference Include="polly" Version="6.1.0" />
   </ItemGroup>
 
 </Project>
