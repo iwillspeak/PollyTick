@@ -44,67 +44,6 @@ namespace PollyTick
             return stats;
         }
 
-        /// <summary>
-        ///   Internal implementation of the `ExecuteNoCapture`.
-        /// </summary>
-        protected T ExecuteNoCaptureInternal<T>(Func<T> action, IStatisticsObserver observer)
-        {
-            var sw = Stopwatch.StartNew();
-            int exceptions = 0;
-            T result = default(T);
-			Exception capturedException = null;
-            try
-            {
-                result = action();
-                return result;
-            }
-            catch (Exception e)
-            {
-                OnException(e, observer);
-				capturedException = e;
-                exceptions++;
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
-                OnExecute(stats, observer);
-            }
-        }
-
-        /// <summary>
-        ///   Internal implementation of the `ExecuteNoCaptureAsync`.
-        /// </summary>
-        protected async Task<T> ExecuteNoCaptureInternalAsync<T>(
-            Func<CancellationToken, Task<T>> action,
-            IStatisticsObserver observer,
-            CancellationToken token)
-        {
-            var sw = Stopwatch.StartNew();
-            var exceptions = 0;
-            T result = default(T);
-			Exception capturedException = null;
-            try
-            {
-                result = await action(token);
-                return result;
-            }
-            catch (Exception e)
-            {
-                OnException(e, observer);
-				capturedException = e;
-                exceptions++;
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
-                OnExecute(stats, observer);
-            }
-        }
-
         protected void OnExecute(Statistics stats, IStatisticsObserver observer)
         {
             observer.OnExecute(stats);
