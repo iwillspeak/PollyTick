@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace PollyTick
 {
+    /// <summary>
+    /// Base class for all async ticker instances
+    /// </summary>
     public class AsyncTickerInstanceBase : TickerInstanceBase
     {
         /// <summary>

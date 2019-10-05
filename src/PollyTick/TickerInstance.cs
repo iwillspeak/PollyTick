@@ -6,11 +6,14 @@ using System.Threading;
 
 namespace PollyTick
 {
+    /// <summary>
+    ///  A ticker instance which observes an <see cref="ISyncPolicy" />.
+    /// </summary>
     public class TickerInstance : SyncTickerInstanceBase
     {
         private ISyncPolicy _policy;
 
-        public TickerInstance(ISyncPolicy policy)
+        internal TickerInstance(ISyncPolicy policy)
         {
             _policy = policy;
         }

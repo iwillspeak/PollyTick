@@ -3,6 +3,9 @@ using System.Diagnostics;
 
 namespace PollyTick
 {
+    /// <summary>
+    ///   Base class for all synchronous ticker instances
+    /// </summary>
     public class SyncTickerInstanceBase : TickerInstanceBase
     {
         /// <summary>

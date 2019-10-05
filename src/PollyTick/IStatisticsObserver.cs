@@ -2,6 +2,9 @@ using System;
 
 namespace PollyTick
 {
+    /// <summary>
+    ///   An observer of <see cref="TickerInstance" /> executions.
+    /// </summary>
     public interface IStatisticsObserver
     {
         /// <summary>
