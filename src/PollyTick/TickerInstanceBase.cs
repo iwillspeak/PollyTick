@@ -7,8 +7,16 @@ using Polly;
 
 namespace PollyTick
 {
+    /// <summary>
+    ///  The base class for all ticker instances
+    /// </summary>
     public abstract class TickerInstanceBase
     {
+        private List<IStatisticsObserver> _observers;
+        
+        /// <summary>
+        ///  Create an instance of a ticker instance
+        /// </summary>
         protected TickerInstanceBase()
         {
             _observers = new List<IStatisticsObserver>(3);
@@ -44,6 +52,11 @@ namespace PollyTick
             return stats;
         }
 
+        /// <summary>
+        /// Notify observers of the result of an excecution
+        /// </summary>
+        /// <param name="stats">The statistics for the execution</param>
+        /// <param name="observer">An immediate observer to also notify</param>
         protected void OnExecute(Statistics stats, IStatisticsObserver observer)
         {
             observer.OnExecute(stats);
@@ -53,6 +66,11 @@ namespace PollyTick
             }
         }
 
+        /// <summary>
+        /// Notify observers of an exception
+        /// </summary>
+        /// <param name="exception">The exceptions observed</param>
+        /// <param name="observer">An immediate observer to also notify</param>
         protected void OnException(Exception exception, IStatisticsObserver observer)
         {
             observer.OnException(exception);
@@ -61,7 +79,5 @@ namespace PollyTick
                 obs.OnException(exception);
             }
         }
-
-        private List<IStatisticsObserver> _observers;
     }
 }

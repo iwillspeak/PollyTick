@@ -9,6 +9,13 @@ namespace PollyTick
     /// </summary>
     public class Statistics
     {
+        /// <summary>
+        ///  Create a new statistics instance
+        /// </summary>
+        /// <param name="executions">The number of excecutions this statistics object covers</param>
+        /// <param name="exceptions">The number of exceptions observed</param>
+        /// <param name="elapsed">The total elapsed time observed</param>
+        /// <param name="finalException">The last exception observed, if any</param>
         public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException)
         {
             Executions = executions;
@@ -45,6 +52,14 @@ namespace PollyTick
     /// </summary>
     public class Statistics<T> : Statistics
     {
+        /// <summary>
+        ///  Create a new statistics instance, with a result value.
+        /// </summary>
+        /// <param name="executions">The number of excecutions this statistics object covers</param>
+        /// <param name="exceptions">The number of exceptions observed</param>
+        /// <param name="elapsed">The total elapsed time observed</param>
+        /// <param name="finalException">The last exception observed, if any</param>
+        /// <param name="result">The result of the execution</param>
         public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException, T result)
             : base(executions, exceptions, elapsed, finalException)
         {

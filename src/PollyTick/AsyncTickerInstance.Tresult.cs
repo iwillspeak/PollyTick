@@ -6,11 +6,15 @@ using Polly;
 
 namespace PollyTick
 {
+    /// <summary>
+    ///  A ticker instance which observes an <see cref="IAsyncPolicy{T}" />
+    /// </summary>
+    /// <typeparam name="T">The return type of the policy execution</typeparam>
     public class AsyncTickerInstance<T> : AsyncTickerInstanceBase
     {
         private IAsyncPolicy<T> _policy;
 
-        public AsyncTickerInstance(IAsyncPolicy<T> policy)
+        internal AsyncTickerInstance(IAsyncPolicy<T> policy)
         {
             _policy = policy;
         }
