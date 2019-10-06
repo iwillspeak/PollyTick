@@ -5,5 +5,9 @@ install:
   - ps: dotnet restore
 build_script:
   - ps: dotnet build Polly.Tick.sln
+  - ps: dotnet pack --configuration Release
 test_script:
   - ps: ForEach ($proj in (Get-ChildItem -Path test -Recurse -Filter '*.csproj')) { dotnet test $proj.FullName }
+artifacts:
+  - path: '**/*.nupkg'
+    name: NuGet Packages
