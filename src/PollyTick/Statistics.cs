@@ -16,7 +16,7 @@ namespace PollyTick
         /// <param name="exceptions">The number of exceptions observed</param>
         /// <param name="elapsed">The total elapsed time observed</param>
         /// <param name="finalException">The last exception observed, if any</param>
-        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception? finalException)
         {
             Executions = executions;
             Exceptions = exceptions;
@@ -44,7 +44,7 @@ namespace PollyTick
 		/// <summary>
 		///   The final exception seen by this statistics, if any.
 		/// </summary>
-		public Exception FinalException { get; }
+		public Exception? FinalException { get; }
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace PollyTick
         /// <param name="elapsed">The total elapsed time observed</param>
         /// <param name="finalException">The last exception observed, if any</param>
         /// <param name="result">The result of the execution</param>
-        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception finalException, T result)
+        public Statistics(int executions, int exceptions, TimeSpan elapsed, Exception? finalException, T? result)
             : base(executions, exceptions, elapsed, finalException)
         {
             Result = result;
@@ -70,6 +70,6 @@ namespace PollyTick
         ///   The result of the operation, if it completed
         ///   successfully.
         /// </summary>
-        public T Result { get; }
+        public T? Result { get; }
     }
 }
