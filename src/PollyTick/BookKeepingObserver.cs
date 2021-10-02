@@ -33,7 +33,7 @@ namespace PollyTick
         /// <summary>
         ///   The last exception observed by this listener.
         /// </summary>
-        public Exception LastException { get; private set; }
+        public Exception? LastException { get; private set; }
 
         /// <summary>
         ///  Called by a ticker ticker instance when an execution completes

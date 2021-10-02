@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <VersionPrefix>0.6.0</VersionPrefix>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFrameworks>netstandard1.1;netstandard2.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>PollyTick</AssemblyName>
     <PackageId>PollyTick</PackageId>

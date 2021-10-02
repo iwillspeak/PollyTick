@@ -15,8 +15,8 @@ namespace PollyTick
         {
             var sw = Stopwatch.StartNew();
             int exceptions = 0;
-            T result = default(T);
-			Exception capturedException = null;
+            T? result = default(T);
+			Exception? capturedException = null;
             try
             {
                 result = action();

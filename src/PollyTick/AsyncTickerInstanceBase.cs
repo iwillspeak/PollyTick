@@ -20,8 +20,8 @@ namespace PollyTick
         {
             var sw = Stopwatch.StartNew();
             var exceptions = 0;
-            T result = default(T);
-			Exception capturedException = null;
+            T? result = default;
+			Exception? capturedException = null;
             try
             {
                 result = await action(token);
