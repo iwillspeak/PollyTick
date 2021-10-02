@@ -1,5 +1,5 @@
 version: 0.0.{build}-pre
-image: Visual Studio 2017
+image: Visual Studio 2019
 install:
   - ps: dotnet --version
   - ps: dotnet restore
