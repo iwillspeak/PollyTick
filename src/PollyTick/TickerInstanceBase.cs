@@ -36,11 +36,11 @@ namespace PollyTick
         /// </summary>
         protected Statistics<TResult> StatisticsFromResult<TResult>(
             PolicyResult<TResult> result,
-            Stopwatch sw,
+            TimeSpan elapsed,
             IStatisticsObserver observer)
         {
             var failures = result.Outcome == OutcomeType.Successful ? 0 : 1;
-            var stats = new Statistics<TResult>(1, failures, sw.Elapsed, result.FinalException, result.Result);
+            var stats = new Statistics<TResult>(1, failures, elapsed, result.FinalException, result.Result);
 
             if (result.FinalException != null)
             {
@@ -79,5 +79,13 @@ namespace PollyTick
                 obs.OnException(exception);
             }
         }
+
+        /// <summary>Convert stopwatch ticks into a timespan</summary>
+        protected static TimeSpan TimeSpanFromTicks(long ticks)
+        {
+            return TimeSpan.FromTicks((long)(ticks * s_tickCoefficient));
+        }
+
+        private static double s_tickCoefficient = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
     }
 }
