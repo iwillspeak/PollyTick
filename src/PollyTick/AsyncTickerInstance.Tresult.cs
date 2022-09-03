@@ -80,11 +80,11 @@ namespace PollyTick
             IStatisticsObserver observer,
             CancellationToken token)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = await _policy.ExecuteAndCaptureAsync(action, token);
-            sw.Stop();
+            var end = Stopwatch.GetTimestamp();
 
-            return StatisticsFromResult(result, sw, observer);
+            return StatisticsFromResult(result, TimeSpanFromTicks(end - start), observer);
         }
 
         /// <summary>

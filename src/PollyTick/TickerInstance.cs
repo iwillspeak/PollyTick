@@ -72,11 +72,11 @@ namespace PollyTick
         /// </summary>
         public Statistics<T> Execute<T>(Func<T> action, IStatisticsObserver observer)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = _policy.ExecuteAndCapture(action);
-            sw.Stop();
+            var end = Stopwatch.GetTimestamp();
             
-            return StatisticsFromResult(result, sw, observer);
+            return StatisticsFromResult(result, TimeSpanFromTicks(end - start), observer);
         }
 
         /// <summary>

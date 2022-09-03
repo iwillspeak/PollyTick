@@ -87,12 +87,12 @@ namespace PollyTick
         ///   Execute the Instrumented body without capturing
         ///   exceptions or intercepting the result.
         /// </summary>
-        public async Task ExecuteNoCaptureAsync(
+        public Task ExecuteNoCaptureAsync(
             Func<CancellationToken, Task> action,
             IStatisticsObserver observer,
             CancellationToken token)
         {
-            await ExecuteNoCaptureAsync(async ct => {
+            return ExecuteNoCaptureAsync(async ct => {
                     await action(ct);
                     return 0;
                 },
@@ -147,11 +147,11 @@ namespace PollyTick
             IStatisticsObserver observer,
             CancellationToken token)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = await _policy.ExecuteAndCaptureAsync(action, token);
-            sw.Stop();
+            var end = Stopwatch.GetTimestamp();
 
-            return StatisticsFromResult(result, sw, observer);
+            return StatisticsFromResult(result, TimeSpanFromTicks(end - start), observer);
         }
 
 
