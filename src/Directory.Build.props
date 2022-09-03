@@ -1,9 +1,9 @@
 <Project>
+    <Import Project="../Directory.Build.props" />
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <LangVersion>Latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
