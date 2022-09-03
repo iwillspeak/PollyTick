@@ -3,10 +3,10 @@ image: Visual Studio 2022
 install:
   - ps: dotnet --version
   - ps: dotnet tool restore
-  - ps: dotnet restore
+  - ps: dotnet restore /P:ContinuousIntegrationBuild=true
 build_script:
-  - ps: dotnet build Polly.Tick.sln
-  - ps: dotnet pack --configuration Release
+  - ps: dotnet build /P:ContinuousIntegrationBuild=true Polly.Tick.sln
+  - ps: dotnet pack /P:ContinuousIntegrationBuild=true --configuration Release
 test_script:
   - ps: dotnet tool run dotnet-format -- --check
   - ps: ForEach ($proj in (Get-ChildItem -Path test -Recurse -Filter '*.csproj')) { dotnet test $proj.FullName }
