@@ -3,43 +3,42 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PollyTick
+namespace PollyTick;
+
+/// <summary>
+/// Base class for all async ticker instances
+/// </summary>
+public class AsyncTickerInstanceBase : TickerInstanceBase
 {
     /// <summary>
-    /// Base class for all async ticker instances
+    ///   Internal implementation of the `ExecuteNoCaptureAsync`.
     /// </summary>
-    public class AsyncTickerInstanceBase : TickerInstanceBase
+    protected async Task<T> ExecuteNoCaptureInternalAsync<T>(
+        Func<CancellationToken, Task<T>> action,
+        IStatisticsObserver observer,
+        CancellationToken token)
     {
-        /// <summary>
-        ///   Internal implementation of the `ExecuteNoCaptureAsync`.
-        /// </summary>
-        protected async Task<T> ExecuteNoCaptureInternalAsync<T>(
-            Func<CancellationToken, Task<T>> action,
-            IStatisticsObserver observer,
-            CancellationToken token)
+        var sw = Stopwatch.StartNew();
+        var exceptions = 0;
+        T? result = default;
+        Exception? capturedException = null;
+        try
         {
-            var sw = Stopwatch.StartNew();
-            var exceptions = 0;
-            T? result = default;
-			Exception? capturedException = null;
-            try
-            {
-                result = await action(token);
-                return result;
-            }
-            catch (Exception e)
-            {
-                OnException(e, observer);
-				capturedException = e;
-                exceptions++;
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
-                OnExecute(stats, observer);
-            }
+            result = await action(token);
+            return result;
+        }
+        catch (Exception e)
+        {
+            OnException(e, observer);
+            capturedException = e;
+            exceptions++;
+            throw;
+        }
+        finally
+        {
+            sw.Stop();
+            var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
+            OnExecute(stats, observer);
         }
     }
 }

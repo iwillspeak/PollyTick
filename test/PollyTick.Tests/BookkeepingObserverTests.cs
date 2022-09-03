@@ -4,67 +4,66 @@ using PollyTick;
 using Xunit;
 using System;
 
-namespace PollyTickTests
+namespace PollyTickTests;
+
+public class BookkeepingObserverTests
 {
-    public class BookkeepingObserverTests
+    [Fact]
+    public async Task Bookkeeper_WithMulitpleUpdatesInParallel_IsThreadSafe()
     {
-        [Fact]
-        public async Task Bookkeeper_WithMulitpleUpdatesInParallel_IsThreadSafe()
-        {
-            var bookkeeper = new BookkeepingObserver();
+        var bookkeeper = new BookkeepingObserver();
 
-            var tasks = new List<Task>(100);
-            for (int i = 0; i < 100; i++)
+        var tasks = new List<Task>(100);
+        for (int i = 0; i < 100; i++)
+        {
+            tasks.Add(Task.Run(() =>
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3), null));
-                }));
-            }
-
-            await Task.WhenAll(tasks);
-
-            Assert.Equal(100, bookkeeper.Executions);
-            Assert.Equal(200, bookkeeper.Exceptions);
-            Assert.Equal(300, bookkeeper.Elapsed.TotalSeconds);
-        }
- 
-        [Fact]
-        public void Bookkeeper_WhenExceptionsAreThwon_StoresLastException()
-        {
-            var bookkeeper = new BookkeepingObserver();
-
-            var ex1 = new Exception("one");
-            bookkeeper.OnException(ex1);
-
-            Assert.Equal(ex1, bookkeeper.LastException);
+                bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromSeconds(3), null));
+            }));
         }
 
-        [Fact]
-        public void Bookkeeper_ConvertedToStatistics_ExposesStatisticsSnapshot()
-        {
-            var bookkeeper = new BookkeepingObserver();
+        await Task.WhenAll(tasks);
 
-            bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromTicks(3), null));
-            bookkeeper.OnExecute(new Statistics(4, 5, TimeSpan.FromTicks(6), null));
+        Assert.Equal(100, bookkeeper.Executions);
+        Assert.Equal(200, bookkeeper.Exceptions);
+        Assert.Equal(300, bookkeeper.Elapsed.TotalSeconds);
+    }
 
-            var stats = bookkeeper.IntoStatistics();
+    [Fact]
+    public void Bookkeeper_WhenExceptionsAreThwon_StoresLastException()
+    {
+        var bookkeeper = new BookkeepingObserver();
 
-            Assert.Equal(5, stats.Executions);
-            Assert.Equal(7, stats.Exceptions);
-            Assert.Equal(9, stats.Elapsed.Ticks);
-        }
+        var ex1 = new Exception("one");
+        bookkeeper.OnException(ex1);
 
-        [Fact]
-        public void Bookkeeper_WhenExceptionIsCaptured_ExposedInStatistics()
-        {
-            var bookkeeper = new BookkeepingObserver();
+        Assert.Equal(ex1, bookkeeper.LastException);
+    }
 
-            bookkeeper.OnException(new Exception("test"));
-            var stats = bookkeeper.IntoStatistics();
+    [Fact]
+    public void Bookkeeper_ConvertedToStatistics_ExposesStatisticsSnapshot()
+    {
+        var bookkeeper = new BookkeepingObserver();
 
-            Assert.Equal("test", bookkeeper.LastException.Message);
-            Assert.Equal("test", stats.FinalException.Message);
-        }
-   }
+        bookkeeper.OnExecute(new Statistics(1, 2, TimeSpan.FromTicks(3), null));
+        bookkeeper.OnExecute(new Statistics(4, 5, TimeSpan.FromTicks(6), null));
+
+        var stats = bookkeeper.IntoStatistics();
+
+        Assert.Equal(5, stats.Executions);
+        Assert.Equal(7, stats.Exceptions);
+        Assert.Equal(9, stats.Elapsed.Ticks);
+    }
+
+    [Fact]
+    public void Bookkeeper_WhenExceptionIsCaptured_ExposedInStatistics()
+    {
+        var bookkeeper = new BookkeepingObserver();
+
+        bookkeeper.OnException(new Exception("test"));
+        var stats = bookkeeper.IntoStatistics();
+
+        Assert.Equal("test", bookkeeper.LastException.Message);
+        Assert.Equal("test", stats.FinalException.Message);
+    }
 }

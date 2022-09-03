@@ -1,21 +1,20 @@
 using System;
 
-namespace PollyTick
+namespace PollyTick;
+
+/// <summary>
+///   An observer of <see cref="TickerInstance" /> executions.
+/// </summary>
+public interface IStatisticsObserver
 {
     /// <summary>
-    ///   An observer of <see cref="TickerInstance" /> executions.
+    ///   Observes the result of an execution. Called with the statistics
+    ///   from the execution when it completes.
     /// </summary>
-    public interface IStatisticsObserver
-    {
-        /// <summary>
-        ///   Observes the result of an execution. Called with the statistics
-        ///   from the execution when it completes.
-        /// </summary>
-        void OnExecute(Statistics statistics);
+    void OnExecute(Statistics statistics);
 
-        /// <summary>
-        ///   Observes an Exception during execution
-        /// </summary>
-        void OnException(Exception exception);
-    }
+    /// <summary>
+    ///   Observes an Exception during execution
+    /// </summary>
+    void OnException(Exception exception);
 }

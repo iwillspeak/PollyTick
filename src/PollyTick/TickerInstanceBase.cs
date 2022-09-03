@@ -5,87 +5,86 @@ using System.Threading;
 using System.Threading.Tasks;
 using Polly;
 
-namespace PollyTick
+namespace PollyTick;
+
+/// <summary>
+///  The base class for all ticker instances
+/// </summary>
+public abstract class TickerInstanceBase
 {
+    private List<IStatisticsObserver> _observers;
+
     /// <summary>
-    ///  The base class for all ticker instances
+    ///  Create an instance of a ticker instance
     /// </summary>
-    public abstract class TickerInstanceBase
+    protected TickerInstanceBase()
     {
-        private List<IStatisticsObserver> _observers;
-        
-        /// <summary>
-        ///  Create an instance of a ticker instance
-        /// </summary>
-        protected TickerInstanceBase()
-        {
-            _observers = new List<IStatisticsObserver>(3);
-        }
-
-        /// <summary>
-        ///   Add a global observer to this ticker instance.
-        /// </summary>
-        protected void AddObserver(IStatisticsObserver observer)
-        {
-            _observers.Add(observer);
-        }
-        
-        /// <summary>
-        ///   Convert a Polly `ExecutionResult` into an instance of
-        ///   our `Statistics` class.
-        /// </summary>
-        protected Statistics<TResult> StatisticsFromResult<TResult>(
-            PolicyResult<TResult> result,
-            TimeSpan elapsed,
-            IStatisticsObserver observer)
-        {
-            var failures = result.Outcome == OutcomeType.Successful ? 0 : 1;
-            var stats = new Statistics<TResult>(1, failures, elapsed, result.FinalException, result.Result);
-
-            if (result.FinalException != null)
-            {
-                OnException(result.FinalException, observer);
-            }
-
-            OnExecute(stats, observer);
-
-            return stats;
-        }
-
-        /// <summary>
-        /// Notify observers of the result of an excecution
-        /// </summary>
-        /// <param name="stats">The statistics for the execution</param>
-        /// <param name="observer">An immediate observer to also notify</param>
-        protected void OnExecute(Statistics stats, IStatisticsObserver observer)
-        {
-            observer.OnExecute(stats);
-            foreach (var obs in _observers)
-            {
-                obs.OnExecute(stats);
-            }
-        }
-
-        /// <summary>
-        /// Notify observers of an exception
-        /// </summary>
-        /// <param name="exception">The exceptions observed</param>
-        /// <param name="observer">An immediate observer to also notify</param>
-        protected void OnException(Exception exception, IStatisticsObserver observer)
-        {
-            observer.OnException(exception);
-            foreach (var obs in _observers)
-            {
-                obs.OnException(exception);
-            }
-        }
-
-        /// <summary>Convert stopwatch ticks into a timespan</summary>
-        protected static TimeSpan TimeSpanFromTicks(long ticks)
-        {
-            return TimeSpan.FromTicks((long)(ticks * s_tickCoefficient));
-        }
-
-        private static double s_tickCoefficient = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
+        _observers = new List<IStatisticsObserver>(3);
     }
+
+    /// <summary>
+    ///   Add a global observer to this ticker instance.
+    /// </summary>
+    protected void AddObserver(IStatisticsObserver observer)
+    {
+        _observers.Add(observer);
+    }
+
+    /// <summary>
+    ///   Convert a Polly `ExecutionResult` into an instance of
+    ///   our `Statistics` class.
+    /// </summary>
+    protected Statistics<TResult> StatisticsFromResult<TResult>(
+        PolicyResult<TResult> result,
+        TimeSpan elapsed,
+        IStatisticsObserver observer)
+    {
+        var failures = result.Outcome == OutcomeType.Successful ? 0 : 1;
+        var stats = new Statistics<TResult>(1, failures, elapsed, result.FinalException, result.Result);
+
+        if (result.FinalException != null)
+        {
+            OnException(result.FinalException, observer);
+        }
+
+        OnExecute(stats, observer);
+
+        return stats;
+    }
+
+    /// <summary>
+    /// Notify observers of the result of an excecution
+    /// </summary>
+    /// <param name="stats">The statistics for the execution</param>
+    /// <param name="observer">An immediate observer to also notify</param>
+    protected void OnExecute(Statistics stats, IStatisticsObserver observer)
+    {
+        observer.OnExecute(stats);
+        foreach (var obs in _observers)
+        {
+            obs.OnExecute(stats);
+        }
+    }
+
+    /// <summary>
+    /// Notify observers of an exception
+    /// </summary>
+    /// <param name="exception">The exceptions observed</param>
+    /// <param name="observer">An immediate observer to also notify</param>
+    protected void OnException(Exception exception, IStatisticsObserver observer)
+    {
+        observer.OnException(exception);
+        foreach (var obs in _observers)
+        {
+            obs.OnException(exception);
+        }
+    }
+
+    /// <summary>Convert stopwatch ticks into a timespan</summary>
+    protected static TimeSpan TimeSpanFromTicks(long ticks)
+    {
+        return TimeSpan.FromTicks((long)(ticks * s_tickCoefficient));
+    }
+
+    private static double s_tickCoefficient = (double)TimeSpan.TicksPerSecond / Stopwatch.Frequency;
 }
