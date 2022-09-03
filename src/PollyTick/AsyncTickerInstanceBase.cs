@@ -18,17 +18,20 @@ public class AsyncTickerInstanceBase : TickerInstanceBase
         IStatisticsObserver observer,
         CancellationToken token)
     {
-        var sw = Stopwatch.StartNew();
+        var start = Stopwatch.GetTimestamp();
+        var end = start;
         var exceptions = 0;
         T? result = default;
         Exception? capturedException = null;
         try
         {
             result = await action(token);
+            end = Stopwatch.GetTimestamp();
             return result;
         }
         catch (Exception e)
         {
+            end = Stopwatch.GetTimestamp();
             OnException(e, observer);
             capturedException = e;
             exceptions++;
@@ -36,8 +39,7 @@ public class AsyncTickerInstanceBase : TickerInstanceBase
         }
         finally
         {
-            sw.Stop();
-            var stats = new Statistics<T>(1, exceptions, sw.Elapsed, capturedException, result);
+            var stats = new Statistics<T>(1, exceptions, TimeSpanFromTicks(end - start), capturedException, result);
             OnExecute(stats, observer);
         }
     }
